@@ -22,8 +22,8 @@ export interface WeatherSummary {
 export interface CommuteAdvice {
   headline: string;
   description: string;
-  safeMinutes: number;
-  riskProgress: number; // 0.0 - 1.0
+  riskProgress: number;
+  riskLevel: "low" | "moderate" | "high" | "unknown";
 }
 
 export interface SafetyStatus {

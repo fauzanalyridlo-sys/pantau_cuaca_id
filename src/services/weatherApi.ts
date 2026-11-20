@@ -2,7 +2,9 @@ import { HourlyWeather, WeatherSummary, SafetyStatus } from "../types/weather";
 
 interface OpenMeteoResponse {
   current?: {
+    time?: string;
     temperature_2m: number;
+    apparent_temperature?: number;
     relative_humidity_2m: number;
     wind_speed_10m: number;
     weather_code: number;
@@ -36,7 +38,8 @@ function mapWeatherCode(code: number): {
   if (code === 1 || code === 2) return { condition: "Cerah Berawan", icon: "partly-cloudy" };
   if (code === 3) return { condition: "Berawan", icon: "cloudy" };
   if (code >= 51 && code <= 67) return { condition: "Hujan", icon: "rainy" };
-  if (code >= 80 && code <= 99) return { condition: "Hujan Petir", icon: "rainy" };
+  if (code >= 80 && code <= 82) return { condition: "Hujan", icon: "rainy" };
+  if (code >= 95 && code <= 99) return { condition: "Hujan Petir", icon: "rainy" };
   return { condition: "Berawan", icon: "cloudy" };
 }
 
@@ -47,9 +50,9 @@ export async function fetchWeatherByCoords(
 ): Promise<WeatherSummary> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code` +
+    `&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code` +
     `&hourly=temperature_2m,precipitation_probability,weather_code` +
-    `&timezone=Asia%2FJakarta&forecast_days=1`;
+    `&timezone=Asia%2FJakarta&forecast_days=2`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -63,29 +66,41 @@ export async function fetchWeatherByCoords(
   const currentMapped = mapWeatherCode(current?.weather_code ?? 2);
   const currentTempC = Math.round(current?.temperature_2m ?? 28);
 
-  const nowHourStr = new Date().toLocaleTimeString("en-GB", {
+  const jakartaNow = new Intl.DateTimeFormat("sv-SE", {
     timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
-    minute: "2-digit",
-  });
-  const currentHourPrefix = nowHourStr.slice(0, 2);
+    hourCycle: "h23",
+  }).format(new Date()).replace(" ", "T");
+
+  const currentHourKey = (current?.time ?? jakartaNow).slice(0, 13);
 
   const slots: HourlyWeather[] = [];
-  if (hourlyRaw?.time) {
-    for (let i = 0; i < hourlyRaw.time.length; i++) {
-      const isoTime = hourlyRaw.time[i]; // "2026-11-19T20:00"
-      const hhmm = isoTime.split("T")[1]?.slice(0, 5) ?? "00:00";
-      const hourPrefix = hhmm.slice(0, 2);
 
-      if (hourPrefix >= currentHourPrefix && slots.length < 6) {
+  if (hourlyRaw?.time) {
+    const startIndex = hourlyRaw.time.findIndex(
+      (time) => time.slice(0, 13) >= currentHourKey
+    );
+
+    if (startIndex >= 0) {
+      for (
+        let i = startIndex;
+        i < hourlyRaw.time.length && slots.length < 24;
+        i++
+      ) {
+        const isoTime = hourlyRaw.time[i];
+        const hhmm = isoTime.split("T")[1]?.slice(0, 5) ?? "00:00";
         const mapped = mapWeatherCode(hourlyRaw.weather_code?.[i] ?? 2);
+
         slots.push({
           time: hhmm,
           tempC: Math.round(hourlyRaw.temperature_2m?.[i] ?? currentTempC),
           condition: mapped.condition,
           rainProb: Math.round(hourlyRaw.precipitation_probability?.[i] ?? 0),
           icon: mapped.icon,
-          isNow: slots.length === 0,
+          isNow: isoTime.slice(0, 13) === currentHourKey,
         });
       }
     }
@@ -98,7 +113,7 @@ export async function fetchWeatherByCoords(
   return {
     locationName,
     currentTempC,
-    feelsLikeC: currentTempC + 1,
+    feelsLikeC: Math.round(current?.apparent_temperature ?? currentTempC),
     highC,
     lowC,
     condition: currentMapped.condition,

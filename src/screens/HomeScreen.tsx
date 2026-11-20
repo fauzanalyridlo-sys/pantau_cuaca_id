@@ -150,13 +150,13 @@ export default function HomeScreen() {
                   <View style={styles.riskTrack}>
                     <LinearGradient colors={["#10B981", "#84CC16", "#F59E0B"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.riskFill, { width: `${advice.riskProgress * 100}%` }]} />
                   </View>
-                  <Text style={styles.riskLabel}>{advice.riskProgress >= 0.6 ? "Risiko tinggi" : "Risiko rendah"}</Text>
+                  <Text style={styles.riskLabel}>{advice.riskLevel === "unknown" ? "Data belum tersedia" : advice.riskLevel === "high" ? "Risiko tinggi" : advice.riskLevel === "moderate" ? "Waspada" : "Risiko rendah"}</Text>
                 </View>
               </View>
             )}
 
             <View style={[styles.sectionWrap, !showAdvice && { marginTop: 20 }]}>
-              <Text style={styles.sectionEyebrow}>PRAKIRAAN HARI INI</Text>
+              <Text style={styles.sectionEyebrow}>PRAKIRAAN 24 JAM</Text>
               <View style={styles.sectionHeaderRow}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={styles.sectionTitle}>Timeline hujan</Text>
