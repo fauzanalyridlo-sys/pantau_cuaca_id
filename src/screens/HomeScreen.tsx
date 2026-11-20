@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, StatusBar, Platform, ActivityIndicator, Modal, Linking } from "react-native";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, StatusBar, Platform, ActivityIndicator, Modal, Linking, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { WeatherSummary, SafetyStatus } from "../types/weather";
 import { getCommuteAdvice } from "../utils/commuterHelper";
+import { getRainAlerts } from "../utils/rainAlertHelper";
+import { requestRainNotificationPermission, notifyRainAlerts } from "../services/rainNotificationService";
+import * as Notifications from "expo-notifications";
 import { FALLBACK_WEATHER, FALLBACK_SAFETY } from "../utils/fallbackData";
 import { LOCATION_PRESETS, LocationPreset } from "../utils/locationPresets";
 import { SHELTER_BY_LOCATION } from "../utils/shelterData";
@@ -26,6 +29,7 @@ export default function HomeScreen() {
   const [weatherDataStatus, setWeatherDataStatus] = useState<"live" | "demo" | "offline">("demo");
   const [showAdvice, setShowAdvice] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<TabKey>("Beranda");
+  const [notificationEnabled, setNotificationEnabled] = useState<boolean>(false);
 
   const loadLiveData = useCallback(async (targetLoc: LocationPreset = selectedLoc) => {
     setLoading(true);
@@ -51,6 +55,81 @@ export default function HomeScreen() {
   useEffect(() => {
     loadLiveData(selectedLoc);
   }, [selectedLoc, loadLiveData]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    Notifications.getPermissionsAsync().then((permission) => {
+      if (mounted && permission.granted) setNotificationEnabled(true);
+    }).catch(() => {});
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const rainAlerts = useMemo(
+    () => getRainAlerts(weather.hourly, selectedLoc.name),
+    [weather.hourly, selectedLoc.name]
+  );
+
+  useEffect(() => {
+    if (
+      !notificationEnabled ||
+      weatherDataStatus !== "live" ||
+      weather.locationName !== selectedLoc.name
+    ) {
+      return;
+    }
+
+    notifyRainAlerts(rainAlerts).catch((error) => {
+      console.warn("Gagal mengirim notifikasi hujan:", error);
+    });
+  }, [
+    notificationEnabled,
+    weatherDataStatus,
+    weather,
+    selectedLoc,
+    rainAlerts,
+  ]);
+
+  const handleEnableNotifications = async () => {
+    try {
+      const granted = await requestRainNotificationPermission();
+
+      if (!granted) {
+        const permission = await Notifications.getPermissionsAsync();
+
+        Alert.alert(
+          "Izin notifikasi belum aktif",
+          `Status: ${permission.status}\nBisa meminta izin lagi: ${permission.canAskAgain ? "Ya" : "Tidak"}. Periksa pengaturan notifikasi aplikasi di Android.`
+        );
+        return;
+      }
+
+      setNotificationEnabled(true);
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Notifikasi hujan aktif",
+          body: "PantauCuaca ID berhasil mengaktifkan notifikasi lokal.",
+          sound: "default",
+        },
+        trigger: null,
+      });
+
+      Alert.alert(
+        "Berhasil diaktifkan",
+        "Izin notifikasi sudah aktif. Cek apakah notifikasi percobaan muncul di HP."
+      );
+    } catch (error) {
+      console.warn("Gagal mengaktifkan notifikasi:", error);
+      Alert.alert(
+        "Notifikasi gagal diaktifkan",
+        String(error)
+      );
+    }
+  };
 
   const handleSelectLocation = (preset: LocationPreset) => {
     setSelectedLoc(preset);
@@ -236,7 +315,14 @@ export default function HomeScreen() {
         )}
 
         {activeTab === "Peringatan" && (
-          <AlertTab safety={safety} onRefresh={() => loadLiveData(selectedLoc)} />
+          <AlertTab
+            safety={safety}
+            onRefresh={() => loadLiveData(selectedLoc)}
+            rainAlerts={rainAlerts}
+            notificationEnabled={notificationEnabled}
+            onEnableNotifications={handleEnableNotifications}
+            weatherDataStatus={weatherDataStatus}
+          />
         )}
 
         {activeTab === "Profil" && <ProfileTab />}

@@ -1,5 +1,6 @@
 export interface HourlyWeather {
   time: string;
+  dateTime?: string;
   tempC: number;
   condition: string;
   rainProb: number;

@@ -109,6 +109,7 @@ export async function fetchWeatherByCoords(
 
         slots.push({
           time: hhmm,
+          dateTime: isoTime,
           tempC: Math.round(hourlyRaw.temperature_2m?.[i] ?? currentTempC),
           condition: mapped.condition,
           rainProb: Math.round(hourlyRaw.precipitation_probability?.[i] ?? 0),
