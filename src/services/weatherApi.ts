@@ -13,6 +13,7 @@ interface OpenMeteoResponse {
     time: string[];
     temperature_2m: number[];
     precipitation_probability: number[];
+    rain?: number[];
     weather_code: number[];
   };
 }
@@ -28,6 +29,13 @@ interface BmkgQuakeResponse {
       Potensi?: string;
     };
   };
+}
+
+function mapRainIntensity(rainMm: number): NonNullable<HourlyWeather["rainIntensity"]> {
+  if (rainMm < 0.1) return "none";
+  if (rainMm < 2.5) return "light";
+  if (rainMm < 7.5) return "moderate";
+  return "heavy";
 }
 
 function mapWeatherCode(code: number): {
@@ -51,7 +59,7 @@ export async function fetchWeatherByCoords(
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code` +
-    `&hourly=temperature_2m,precipitation_probability,weather_code` +
+    `&hourly=temperature_2m,precipitation_probability,rain,weather_code` +
     `&timezone=Asia%2FJakarta&forecast_days=2`;
 
   const res = await fetch(url);
@@ -94,11 +102,18 @@ export async function fetchWeatherByCoords(
         const hhmm = isoTime.split("T")[1]?.slice(0, 5) ?? "00:00";
         const mapped = mapWeatherCode(hourlyRaw.weather_code?.[i] ?? 2);
 
+        const rainMm = Math.max(
+          0,
+          Number((hourlyRaw.rain?.[i] ?? 0).toFixed(1))
+        );
+
         slots.push({
           time: hhmm,
           tempC: Math.round(hourlyRaw.temperature_2m?.[i] ?? currentTempC),
           condition: mapped.condition,
           rainProb: Math.round(hourlyRaw.precipitation_probability?.[i] ?? 0),
+          rainMm,
+          rainIntensity: mapRainIntensity(rainMm),
           icon: mapped.icon,
           isNow: isoTime.slice(0, 13) === currentHourKey,
         });

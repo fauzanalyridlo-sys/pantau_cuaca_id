@@ -3,6 +3,8 @@ export interface HourlyWeather {
   tempC: number;
   condition: string;
   rainProb: number;
+  rainMm?: number;
+  rainIntensity?: "none" | "light" | "moderate" | "heavy";
   icon: "sunny" | "partly-cloudy" | "cloudy" | "rainy";
   isNow?: boolean;
 }

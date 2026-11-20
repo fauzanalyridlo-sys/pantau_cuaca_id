@@ -181,6 +181,9 @@ export default function HomeScreen() {
                       <View style={styles.hourIconWrap}>{renderWeatherIcon(slot.icon, active)}</View>
                       <Text style={[styles.hourTemp, active && styles.textWhite]}>{slot.tempC}°</Text>
                       <Text style={[styles.hourProb, active ? styles.hourProbActive : slot.rainProb >= 70 ? styles.hourProbHigh : styles.hourProbLow]}>{slot.rainProb}%</Text>
+                      <Text style={[styles.hourRain, active && styles.hourProbActive]}>
+                        {(slot.rainIntensity ?? "none") === "heavy" ? "Lebat" : (slot.rainIntensity ?? "none") === "moderate" ? "Sedang" : (slot.rainIntensity ?? "none") === "light" ? "Ringan" : "Minim"} · {(slot.rainMm ?? 0).toFixed(1)} mm
+                      </Text>
                     </View>
                   );
                 })}

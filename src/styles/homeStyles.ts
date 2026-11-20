@@ -61,6 +61,7 @@ export const homeStyles = StyleSheet.create({
   sunCore: { width: 20, height: 20, borderRadius: 10, backgroundColor: "#FBBF24" },
   hourTemp: { color: "#1E293B", fontSize: 18, fontWeight: "700" },
   hourProb: { fontSize: 11, fontWeight: "600", marginTop: 4 },
+  hourRain: { color: "#64748B", fontSize: 9, fontWeight: "600", marginTop: 3 },
   hourProbActive: { color: "#BBDCFB" },
   hourProbHigh: { color: "#2563EB" },
   hourProbLow: { color: "#94A3B8" },
