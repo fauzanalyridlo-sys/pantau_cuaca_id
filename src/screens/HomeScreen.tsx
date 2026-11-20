@@ -23,6 +23,7 @@ export default function HomeScreen() {
   const [weather, setWeather] = useState<WeatherSummary>(FALLBACK_WEATHER);
   const [safety, setSafety] = useState<SafetyStatus>(FALLBACK_SAFETY);
   const [loading, setLoading] = useState<boolean>(true);
+  const [weatherDataStatus, setWeatherDataStatus] = useState<"live" | "demo" | "offline">("demo");
   const [showAdvice, setShowAdvice] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<TabKey>("Beranda");
 
@@ -35,6 +36,9 @@ export default function HomeScreen() {
       ]);
       if (liveWeather.status === "fulfilled" && liveWeather.value.hourly.length > 0) {
         setWeather(liveWeather.value);
+        setWeatherDataStatus("live");
+      } else {
+        setWeatherDataStatus("offline");
       }
       if (liveSafety.status === "fulfilled") {
         setSafety(liveSafety.value);
@@ -74,7 +78,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, activeTab !== "Beranda" && { paddingTop: TOP_INSET }]} showsVerticalScrollIndicator={false}>
         {activeTab === "Beranda" && (
           <>
-            <LinearGradient colors={["#0B3B39", "#135D58", "#18736C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.heroHeader, { paddingTop: TOP_INSET + 10 }]}>
+            <LinearGradient colors={["#1976D2", "#1565C0", "#0D47A1"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.heroHeader, { paddingTop: TOP_INSET + 10 }]}>
               <View style={styles.topBar}>
                 <TouchableOpacity style={styles.locationRow} activeOpacity={0.8} onPress={() => setLocModalVisible(true)}>
                   <View style={styles.circleIconBtn}><Ionicons name="location-outline" size={18} color="#E2F1F0" /></View>
@@ -116,13 +120,13 @@ export default function HomeScreen() {
 
               <View style={styles.heroMetrics}>
                 <View style={styles.metricItem}>
-                  <MaterialCommunityIcons name="waves" size={16} color="#8CE0D8" />
+                  <MaterialCommunityIcons name="waves" size={16} color="#BBDCFB" />
                   <Text style={styles.metricLabel}>Kelembapan</Text>
                   <Text style={styles.metricValue}>{weather.humidity}%</Text>
                 </View>
                 <View style={styles.metricDivider} />
                 <View style={styles.metricItem}>
-                  <MaterialCommunityIcons name="weather-windy" size={16} color="#8CE0D8" />
+                  <MaterialCommunityIcons name="weather-windy" size={16} color="#BBDCFB" />
                   <Text style={styles.metricLabel}>Angin</Text>
                   <Text style={styles.metricValue}>{weather.windKmh} km/j</Text>
                 </View>
@@ -154,7 +158,17 @@ export default function HomeScreen() {
             <View style={[styles.sectionWrap, !showAdvice && { marginTop: 20 }]}>
               <Text style={styles.sectionEyebrow}>PRAKIRAAN HARI INI</Text>
               <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>Timeline hujan</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={styles.sectionTitle}>Timeline hujan</Text>
+                  <View style={styles.gpsBadge}>
+                    <View style={[styles.gpsDot, {
+                      backgroundColor: weatherDataStatus === "live" ? "#10B981" : weatherDataStatus === "demo" ? "#F59E0B" : "#DC4545"
+                    }]} />
+                    <Text style={[styles.gpsText, {
+                      color: weatherDataStatus === "live" ? "#059669" : weatherDataStatus === "demo" ? "#B45309" : "#DC4545"
+                    }]}>{weatherDataStatus.toUpperCase()}</Text>
+                  </View>
+                </View>
                 <TouchableOpacity onPress={() => loadLiveData(selectedLoc)}><Text style={styles.sectionAction}>Refresh</Text></TouchableOpacity>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.timelineList}>
@@ -176,18 +190,18 @@ export default function HomeScreen() {
             <View style={styles.sectionWrap}>
               <View style={styles.sectionHeaderRow}>
                 <Text style={styles.sectionTitle}>Butuh tempat menepi?</Text>
-                <View style={styles.gpsBadge}><View style={styles.gpsDot} /><Text style={styles.gpsText}>GPS aktif</Text></View>
+                <View style={styles.gpsBadge}><View style={[styles.gpsDot, { backgroundColor: "#94A3B8" }]} /><Text style={styles.gpsText}>Lokasi preset</Text></View>
               </View>
-              <LinearGradient colors={["#0F8A7B", "#0B6E63"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.shelterBanner}>
+              <LinearGradient colors={["#1976D2", "#208F86"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.shelterBanner}>
                 <View style={styles.bannerDecorCircle1} />
                 <View style={styles.bannerDecorCircle2} />
                 <View style={styles.shelterContent}>
-                  <View style={styles.shelterPill}><Ionicons name="umbrella-outline" size={13} color="#E6FFFA" /><Text style={styles.shelterPillText}>Darurat hujan</Text></View>
+                  <View style={styles.shelterPill}><Ionicons name="umbrella-outline" size={13} color="#EAF4FF" /><Text style={styles.shelterPillText}>Darurat hujan</Text></View>
                   <Text style={styles.shelterTitle}>Cari shelter aman di sekitar Anda</Text>
                   <Text style={styles.shelterSubtitle}>Masjid, SPBU, dan minimarket terdekat.</Text>
                   <TouchableOpacity style={styles.shelterBtn} activeOpacity={0.85} onPress={() => setShelterModalVisible(true)}>
                     <Text style={styles.shelterBtnText}>Cari sekarang</Text>
-                    <Ionicons name="paper-plane-outline" size={14} color="#0F766E" />
+                    <Ionicons name="paper-plane-outline" size={14} color="#26A69A" />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.shelterRightPin}><Ionicons name="location-outline" size={24} color="#D1FAE5" /></View>
@@ -242,7 +256,7 @@ export default function HomeScreen() {
                     <Text style={styles.presetName}>{item.name}</Text>
                     <Text style={styles.presetTag}>{item.tag}</Text>
                   </View>
-                  {isSelected && <Ionicons name="checkmark-circle" size={20} color="#0F8A7B" />}
+                  {isSelected && <Ionicons name="checkmark-circle" size={20} color="#1976D2" />}
                 </TouchableOpacity>
               );
             })}
@@ -293,7 +307,7 @@ export default function HomeScreen() {
           return (
             <TouchableOpacity key={tab.key} style={styles.navItem} onPress={() => setActiveTab(tab.key)} activeOpacity={0.8}>
               <View style={[styles.navIndicator, isActive && styles.navIndicatorActive]} />
-              <Ionicons name={isActive ? tab.activeIcon : tab.icon} size={21} color={isActive ? "#0F8A7B" : "#94A3B8"} />
+              <Ionicons name={isActive ? tab.activeIcon : tab.icon} size={21} color={isActive ? "#1976D2" : "#64748B"} />
               <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>{tab.key}</Text>
             </TouchableOpacity>
           );

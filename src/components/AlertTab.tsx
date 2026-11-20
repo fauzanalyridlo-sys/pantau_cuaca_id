@@ -23,7 +23,7 @@ export default function AlertTab({ safety, onRefresh }: Props) {
           <Text style={styles.title}>Info Keselamatan & BMKG</Text>
         </View>
         <TouchableOpacity style={styles.refreshBtn} onPress={onRefresh}>
-          <Ionicons name="refresh" size={16} color="#0F8A7B" />
+          <Ionicons name="refresh" size={16} color="#1976D2" />
         </TouchableOpacity>
       </View>
 
@@ -39,7 +39,7 @@ export default function AlertTab({ safety, onRefresh }: Props) {
       {RIDING_TIPS.map((tip) => (
         <View key={tip.id} style={styles.tipCard}>
           <View style={styles.tipIcon}>
-            <MaterialCommunityIcons name={tip.icon} size={20} color="#0F766E" />
+            <MaterialCommunityIcons name={tip.icon} size={20} color="#26A69A" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.tipTitle}>{tip.title}</Text>
@@ -54,17 +54,17 @@ export default function AlertTab({ safety, onRefresh }: Props) {
 const styles = StyleSheet.create({
   container: { padding: 18 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
-  eyebrow: { color: "#0F8A7B", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
+  eyebrow: { color: "#1976D2", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
   title: { color: "#0F172A", fontSize: 20, fontWeight: "700", marginTop: 2 },
-  refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#E6FFFA", justifyContent: "center", alignItems: "center" },
-  quakeBanner: { backgroundColor: "#0E4D4A", borderRadius: 20, padding: 18, marginBottom: 20 },
+  refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: "#EAF4FF", justifyContent: "center", alignItems: "center" },
+  quakeBanner: { backgroundColor: "#1565C0", borderRadius: 20, padding: 18, marginBottom: 20 },
   badge: { alignSelf: "flex-start", backgroundColor: "rgba(255,255,255,0.16)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, marginBottom: 8 },
-  badgeText: { color: "#A7F3D0", fontSize: 10, fontWeight: "700" },
+  badgeText: { color: "#D8F0ED", fontSize: 10, fontWeight: "700" },
   quakeTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
-  quakeDesc: { color: "#CCFBF1", fontSize: 12, lineHeight: 18, marginTop: 6 },
+  quakeDesc: { color: "#D8F0ED", fontSize: 12, lineHeight: 18, marginTop: 6 },
   sectionTitle: { color: "#0F172A", fontSize: 16, fontWeight: "700", marginBottom: 10 },
   tipCard: { flexDirection: "row", gap: 12, backgroundColor: "#FFFFFF", padding: 14, borderRadius: 16, marginBottom: 10, elevation: 2 },
-  tipIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: "#F0FDFA", justifyContent: "center", alignItems: "center" },
+  tipIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: "#EAF4FF", justifyContent: "center", alignItems: "center" },
   tipTitle: { color: "#0F172A", fontSize: 13, fontWeight: "700" },
   tipDesc: { color: "#64748B", fontSize: 12, lineHeight: 17, marginTop: 2 },
 });

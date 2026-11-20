@@ -78,7 +78,7 @@ export default function RouteTab({ selectedLocId, onSelectPreset }: Props) {
             onPress={() => onSelectPreset(route.preset)}
           >
             <View style={styles.routeIcon}>
-              <Ionicons name="navigate-outline" size={19} color="#0F8A7B" />
+              <Ionicons name="navigate-outline" size={19} color="#1976D2" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.routeTitle}>{route.title}</Text>
@@ -94,18 +94,18 @@ export default function RouteTab({ selectedLocId, onSelectPreset }: Props) {
 
 const styles = StyleSheet.create({
   container: { padding: 18 },
-  eyebrow: { color: "#0F8A7B", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
+  eyebrow: { color: "#1976D2", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
   title: { color: "#0F172A", fontSize: 20, fontWeight: "700", marginTop: 2 },
   subtitle: { color: "#64748B", fontSize: 12, marginTop: 4, marginBottom: 16 },
   formCard: { backgroundColor: "#FFFFFF", borderRadius: 18, padding: 14, marginBottom: 16, gap: 8, elevation: 2 },
   formLabel: { color: "#0F172A", fontSize: 13, fontWeight: "700" },
   input: { backgroundColor: "#F8FAFC", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, color: "#0F172A" },
-  addBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#0F8A7B", paddingVertical: 10, borderRadius: 10, marginTop: 4 },
+  addBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: "#1976D2", paddingVertical: 10, borderRadius: 10, marginTop: 4 },
   addBtnText: { color: "#FFFFFF", fontSize: 13, fontWeight: "700" },
   routeCard: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#FFFFFF", padding: 14, borderRadius: 16, borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 10 },
-  routeCardActive: { borderColor: "#0F8A7B", backgroundColor: "#F0FDFA" },
-  routeIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: "#CCFBF1", justifyContent: "center", alignItems: "center" },
+  routeCardActive: { borderColor: "#1976D2", backgroundColor: "#EAF4FF" },
+  routeIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: "#D8F0ED", justifyContent: "center", alignItems: "center" },
   routeTitle: { color: "#0F172A", fontSize: 14, fontWeight: "700" },
   routePath: { color: "#64748B", fontSize: 12, marginTop: 2 },
-  useText: { color: "#0F8A7B", fontSize: 12, fontWeight: "700" },
+  useText: { color: "#1976D2", fontSize: 12, fontWeight: "700" },
 });
