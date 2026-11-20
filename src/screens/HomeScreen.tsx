@@ -15,6 +15,7 @@ import { homeStyles as styles } from "../styles/homeStyles";
 import RouteTab from "../components/RouteTab";
 import AlertTab from "../components/AlertTab";
 import ProfileTab from "../components/ProfileTab";
+import SmartCommuterCard from "../components/SmartCommuterCard";
 
 type TabKey = "Beranda" | "Rute" | "Peringatan" | "Profil";
 const TOP_INSET = Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 8 : 12;
@@ -233,6 +234,11 @@ export default function HomeScreen() {
                 </View>
               </View>
             )}
+
+            <SmartCommuterCard
+              hourly={weather.hourly}
+              weatherDataStatus={weatherDataStatus}
+            />
 
             <View style={[styles.sectionWrap, !showAdvice && { marginTop: 20 }]}>
               <Text style={styles.sectionEyebrow}>PRAKIRAAN 24 JAM</Text>
